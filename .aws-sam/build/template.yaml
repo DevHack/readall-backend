@@ -1,0 +1,97 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'readall-backend
+
+  Sample SAM Template for readall-backend
+
+  '
+Globals:
+  Function:
+    Timeout: 30
+Resources:
+  AuthorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: AuthorFunction
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Role: arn:aws:iam::444652765140:role/Readall-lambda-role
+      FunctionName: AuthorFunction
+      Environment:
+        Variables:
+          MONGODB_URI: mongodb+srv://admin:admin@readallcluster0.owaet.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+          MONGO_DB_NAME: ReadAll
+          MONGO_COLLECTION_NAME: readallAuthors
+      Events:
+        AuthorGet:
+          Type: Api
+          Properties:
+            Path: /author
+            Method: get
+            RequestParameters:
+            - method.request.querystring.term:
+                Required: true
+        AuthorPost:
+          Type: Api
+          Properties:
+            Path: /author
+            Method: post
+  ProfileFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ProfileFunction
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Role: arn:aws:iam::444652765140:role/Readall-lambda-role
+      FunctionName: ProfileFunction
+      Environment:
+        Variables:
+          MONGODB_URI: mongodb+srv://admin:admin@readallcluster0.owaet.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+          MONGO_DB_NAME: ReadAll
+          MONGO_COLLECTION_NAME: readallUsers
+      Events:
+        ProfileGet:
+          Type: Api
+          Properties:
+            Path: /profile/{userId}
+            Method: get
+            RequestParameters:
+            - method.request.querystring.term:
+                Required: true
+        ProfilePost:
+          Type: Api
+          Properties:
+            Path: /profile
+            Method: post
+  MetadataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: MetadataFunction
+      Handler: app.lambdaHandler
+      Runtime: nodejs12.x
+      Role: arn:aws:iam::444652765140:role/Readall-lambda-role
+      FunctionName: MetadataFunction
+      Environment:
+        Variables:
+          MONGODB_URI: mongodb+srv://admin:admin@readallcluster0.owaet.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+          MONGO_DB_NAME: ReadAll
+          MONGO_COLLECTION_NAME: readallMetadata
+      Events:
+        MetadataGet:
+          Type: Api
+          Properties:
+            Path: /metadata
+            Method: get
+            RequestParameters:
+            - method.request.querystring.term:
+                Required: true
+        MetadataPost:
+          Type: Api
+          Properties:
+            Path: /metadata
+            Method: post
+Outputs:
+  AuthotApi:
+    Description: API Gateway endpoint URL for dev stage for Author function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/dev/author/
